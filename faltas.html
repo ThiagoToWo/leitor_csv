@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>title</title>
+	<meta charset='utf-8'/>
+	<link rel="stylesheet" type="text/css" href="styles.css"/>
+	<script src='csv.js'></script>
+	<script>
+		var dadosTxt;
+		var csvTxt;
+		var faltasTxt;
+		var botaoDados;
+		var botaoCSV;
+		var botaoFaltas;
+		var csv;
+		
+		function init() {
+			dadosTxt = document.getElementById('dadosTxt');
+			csvTxt = document.getElementById('csvTxt');
+			faltasTxt = document.getElementById('faltasTxt');
+			botaoDados = document.getElementById('loadData');
+			botaoCSV = document.getElementById('loadCSV');
+			botaoFaltas = document.getElementById('calcFaltas');
+		}
+		
+		function lerDados(arquivo) {
+			var leitor = new FileReader();
+			leitor.readAsText(arquivo);
+			leitor.onload = function() {
+				var texto = leitor.result;
+				dadosTxt.value = texto;
+			}
+		}
+		
+		function lerCSV(arquivo) {
+			var leitor = new FileReader();
+			leitor.readAsText(arquivo);
+			leitor.onload = function() {
+				var texto = leitor.result;
+				csv = new CSV(texto);
+				csvTxt.value = csv.coluna(0);
+			}
+		}
+		
+		function processarFaltas() {
+			var alunos = dadosTxt.value.toUpperCase().split(/[@*\n]/);
+			var presentes = csv.coluna(0);
+			alert(alunos)
+			alert(presentes)
+			for (var i in presentes) {
+				presentes[i] = presentes[i].substring(1, presentes[i].length - 1).toUpperCase();
+				
+				var index = alunos.indexOf(presentes[i]);
+				if (index > -1) {
+					delete alunos[index];
+				}
+			}
+			alert(alunos)
+			faltasTxt.value = alunos;
+		}
+	</script>
+</head>
+<body onload='init();'>
+	<div id='dados'>
+	<textarea id='dadosTxt' rows='40' cols='60'></textarea> <br/>
+	<input id='loadData' type='file' onchange='lerDados(this.files[0]);'/>
+	</div>
+	
+	<div id='csv'>
+	<textarea id='csvTxt' rows='40' cols='60'></textarea> <br/>
+	<input id='loadCSV' type='file' onchange='lerCSV(this.files[0]);'/>
+	</div>
+	
+	<div id='faltas'>
+	<textarea id='faltasTxt' rows='40' cols='60'></textarea> <br/>
+	<button id='calcFaltas' onclick='processarFaltas();'>Processar Faltas</button>
+	</div>
+</body>
+</html>

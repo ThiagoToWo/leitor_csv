@@ -1,0 +1,24 @@
+#dados {
+	position: absolute;
+	left: 0%;
+	top: 0%;
+	width: 33%;
+	height: 100%;
+	border: 2px solid;
+}
+#csv {
+	position: absolute;
+	left: 33.33%;
+	top: 0%;
+	width: 33%;
+	height: 100%;
+	border: 2px solid;
+}
+#faltas {
+	position: absolute;
+	left: 66.66%;
+	top: 0%;
+	width: 33%;
+	height: 100%;
+	border: 2px solid;
+}

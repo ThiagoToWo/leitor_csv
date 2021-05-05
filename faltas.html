@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>title</title>
+	<title>Processamento de Faltas</title>
 	<meta charset='utf-8'/>
 	<link rel="stylesheet" type="text/css" href="styles.css"/>
 	<script src='csv.js'></script>
@@ -38,15 +38,25 @@
 			leitor.onload = function() {
 				var texto = leitor.result;
 				csv = new CSV(texto);
-				csvTxt.value = csv.coluna(0);
+				var presentes = '';
+				var num = 0;
+				
+				for (var i = 0; i < csv.linhas; i++) {
+					if (csv.coluna(0)[i] != '') {						
+						presentes += i + '. ' + csv.coluna(0)[i] + '\n';
+					}
+				}
+				
+				csvTxt.value = presentes;
 			}
 		}
 		
 		function processarFaltas() {
 			var alunos = dadosTxt.value.toUpperCase().split(/[@*\n]/);
 			var presentes = csv.coluna(0);
-			alert(alunos)
-			alert(presentes)
+			var ausentes = '';
+			var num = 1;
+			
 			for (var i in presentes) {
 				presentes[i] = presentes[i].substring(1, presentes[i].length - 1).toUpperCase();
 				
@@ -55,24 +65,34 @@
 					delete alunos[index];
 				}
 			}
-			alert(alunos)
-			faltasTxt.value = alunos;
+			
+			for (var i in alunos) {
+				if (alunos[i] != '') {
+					ausentes += num++ + '. ' + alunos[i] + '\n';
+				}
+			}
+			
+			faltasTxt.value = ausentes;
 		}
 	</script>
 </head>
 <body onload='init();'>
+	<h1>Processamento de Faltas</h1>
 	<div id='dados'>
-	<textarea id='dadosTxt' rows='40' cols='60'></textarea> <br/>
+	<h2>Lista de Alunos</h2>
+	<textarea id='dadosTxt' rows='27' cols='60' placeholder='Insira o nome de cada aluno em linhas diferentes ou carregue um arquivo de texto com esta pré formatação.'></textarea> <br/>
 	<input id='loadData' type='file' onchange='lerDados(this.files[0]);'/>
 	</div>
 	
 	<div id='csv'>
-	<textarea id='csvTxt' rows='40' cols='60'></textarea> <br/>
+	<h2>CSV do Relatório de Presença</h2>
+	<textarea id='csvTxt' rows='27' cols='60' disabled placeholder='Carregue o arquivo csv do relatório de aula.'></textarea> <br/>
 	<input id='loadCSV' type='file' onchange='lerCSV(this.files[0]);'/>
 	</div>
 	
 	<div id='faltas'>
-	<textarea id='faltasTxt' rows='40' cols='60'></textarea> <br/>
+	<h2>Alunos Ausentes</h2>
+	<textarea id='faltasTxt' rows='27' cols='60' disabled ></textarea> <br/>
 	<button id='calcFaltas' onclick='processarFaltas();'>Processar Faltas</button>
 	</div>
 </body>

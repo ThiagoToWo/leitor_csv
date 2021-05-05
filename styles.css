@@ -1,24 +1,35 @@
-#dados {
+body {
+	background: #ffff96;
+}
+div {
 	position: absolute;
-	left: 0%;
-	top: 0%;
-	width: 33%;
-	height: 100%;
+	top: 15%;
+	height: 80%;
 	border: 2px solid;
+	text-align: center;
+	border-radius: 15px;
+}
+button {
+	border-radius: 5px;
+}
+textarea {
+	border-radius: 5px;
+	border-style: inset;
+	font-weight: bold;
+	resize: none;
+}
+#dados {
+	left: 0%;
+	width: 33%;
+	background: #ffc8c8;
 }
 #csv {
-	position: absolute;
 	left: 33.33%;
-	top: 0%;
 	width: 33%;
-	height: 100%;
-	border: 2px solid;
+	background: #c8ffc8;
 }
 #faltas {
-	position: absolute;
 	left: 66.66%;
-	top: 0%;
 	width: 33%;
-	height: 100%;
-	border: 2px solid;
+	background: #c8c8ff;
 }

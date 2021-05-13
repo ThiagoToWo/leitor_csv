@@ -54,6 +54,12 @@
 		
 		function processarFaltas() {
 			var alunos = dadosTxt.value.toUpperCase().split(/[@*\n]/);
+			var alunosSemEspaco = [];
+			
+			for (var i in alunos) {
+				alunosSemEspaco.push(tirarEspacos(alunos[i]));
+			}
+			
 			var presentes = csv.coluna(0);
 			var tempos = csv.coluna(6);
 			var abaixoDe80 = [];
@@ -65,22 +71,22 @@
 			for (var i = 1; i < presentes.length - 1; i++) {
 				presentes[i] = presentes[i].substring(1, presentes[i].length - 1).toUpperCase();
 				
-				var index = alunos.indexOf(presentes[i]);
+				var index = alunosSemEspaco.indexOf(tirarEspacos(presentes[i]));
 				if (index > -1) {
 					delete alunos[index];
 				}
 				
-				var tempo = horaParaSegundo(tempos[i]);
+				var tempo = _horaParaSegundo(tempos[i]);
 				
-				if (tempo < horaParaSegundo('2:40:00') / 2) {
+				if (tempo < _horaParaSegundo('2:40:00') / 2) {
 					abaixoDe80.push(presentes[i]);
 				}
 				
-				if (tempo < horaParaSegundo('1:30:00') / 2) {
+				if (tempo < _horaParaSegundo('1:30:00') / 2) {
 					abaixoDe45.push(presentes[i]);
 				}
 				
-				if (tempo < horaParaSegundo('1:00:00') / 2) {
+				if (tempo < _horaParaSegundo('1:00:00') / 2) {
 					abaixoDe30.push(presentes[i]);
 				}
 			}
@@ -121,7 +127,7 @@
 			faltasTxt.value = ausentes;
 		}
 		
-		function horaParaSegundo(textoHora) {
+		function _horaParaSegundo(textoHora) {
 			var partes = textoHora.split(':');
 			
 			var hora = Number(partes[0]) * 3600;
@@ -130,6 +136,18 @@
 			
 			return hora + minuto + segundo;
 		}
+		
+		function tirarEspacos(texto) {
+			var palavras = texto.split(' ');
+			var semEspaco = '';
+			
+			for (var i in palavras) {
+				semEspaco += palavras[i];
+			}
+			
+			return semEspaco;
+		}
+		
 	</script>
 </head>
 <body onload='init();'>

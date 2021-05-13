@@ -1,6 +1,14 @@
 body {
 	background: #ffff96;
 }
+form {
+	position: absolute;
+	top: 6.5%;
+	left: 35%;
+	border: 2px solid;
+	background: #da794f;
+	//width: 250px;
+}
 div {
 	position: absolute;
 	top: 15%;

@@ -8,10 +8,10 @@ function CSV(textoCSV) {
 CSV.prototype = {	
 	criarMatriz: function(texto) {
 		var matriz = []
-		var linhas = texto.split('\n');
+		var linhas = this._eliminarNulo(texto.split('\n'));
 		
 		for (var i in linhas) {
-			matriz[i] = linhas[i].split(',');
+			matriz[i] = this._eliminarNulo(linhas[i].split(/[",]/));
 		}
 		
 		return matriz;
@@ -29,5 +29,15 @@ CSV.prototype = {
 		}
 		
 		return col;
+	},
+	
+	_eliminarNulo: function(array) {
+		var semNulo = [];
+		
+		for (var i in array) {
+			if (array[i] != '') semNulo.push(array[i]); 
+		}
+		
+		return semNulo;
 	}
 }

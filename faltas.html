@@ -39,12 +39,11 @@
 				var texto = leitor.result;
 				csv = new CSV(texto);
 				var presentes = '';
-				var num = 0;
 				
-				for (var i = 0; i < csv.linhas; i++) {
+				for (var i = 1; i < csv.linhas; i++) {
 					if (csv.coluna(0)[i] != '') {						
 						presentes += i + '. ' + csv.coluna(0)[i] + 
-							' (' + csv.coluna(6)[i] + ')\n';
+							' (' + csv.coluna(5)[i] + ')\n';
 					}
 				}
 				
@@ -61,15 +60,15 @@
 			}
 			
 			var presentes = csv.coluna(0);
-			var tempos = csv.coluna(6);
+			var tempos = csv.coluna(5);
 			var abaixoDe80 = [];
 			var abaixoDe45 = [];
 			var abaixoDe30 = [];
 			var ausentes = 'Ausentes.\n\n';
 			var num = 1;
 			
-			for (var i = 1; i < presentes.length - 1; i++) {
-				presentes[i] = presentes[i].substring(1, presentes[i].length - 1).toUpperCase();
+			for (var i = 1; i < presentes.length; i++) {
+				presentes[i] = presentes[i].toUpperCase();
 				
 				var index = alunosSemEspaco.indexOf(tirarEspacos(presentes[i]));
 				if (index > -1) {

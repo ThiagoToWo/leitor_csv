@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Processamento de Faltas</title>
+	<meta charset='utf-8'/>
+	<style>
+	body {
+		background: #ffff96;
+	}
+	form {
+		position: absolute;
+		top: 6.5%;
+		left: 35%;
+		border: 2px solid;
+		background: #da794f;
+	}
+	div {
+		position: absolute;
+		top: 15%;
+		height: 80%;
+		border: 2px solid;
+		text-align: center;
+		border-radius: 15px;
+	}
+	button {
+		border-radius: 5px;
+	}
+	textarea {
+		border-radius: 5px;
+		border-style: inset;
+		font-weight: bold;
+		resize: none;
+	}
+	#dados {
+		left: 0%;
+		width: 33%;
+		background: #ffc8c8;
+	}
+	#csv {
+		left: 33.33%;
+		width: 33%;
+		background: #c8ffc8;
+	}
+	#faltas {
+		left: 66.66%;
+		width: 33%;
+		background: #c8c8ff;
+	}
+	</style>
+	<script>
+	function CSV(textoCSV) {
+		this.texto = textoCSV;	
+		this.matriz = this.criarMatriz(textoCSV);
+		this.linhas = this.matriz.length;
+		this.colunas = this.matriz[0].length;
+	}
+
+	CSV.prototype = {	
+		criarMatriz: function(texto) {
+			var matriz = []
+			var linhas = this._eliminarNulo(texto.split('\n'));
+			
+			for (var i in linhas) {
+				matriz[i] = this._eliminarNulo(linhas[i].split(/[",]/));
+			}
+			
+			return matriz;
+		},
+		
+		linha: function(n) {
+			return this.matriz[n];
+		},
+		
+		coluna: function(n) {
+			var col = [];
+			
+			for (var i in this.matriz) {
+				col[i] = this.matriz[i][n];
+			}
+			
+			return col;
+		},
+		
+		_eliminarNulo: function(array) {
+			var semNulo = [];
+			
+			for (var i in array) {
+				if (array[i] != '') semNulo.push(array[i]); 
+			}
+			
+			return semNulo;
+		}
+	}
+	</script>
+	<script>
+		var dadosTxt;
+		var csvTxt;
+		var faltasTxt;
+		var botaoDados;
+		var botaoCSV;
+		var botaoFaltas;
+		var csv;
+		
+		function init() {
+			dadosTxt = document.getElementById('dadosTxt');
+			csvTxt = document.getElementById('csvTxt');
+			faltasTxt = document.getElementById('faltasTxt');
+			botaoDados = document.getElementById('loadData');
+			botaoCSV = document.getElementById('loadCSV');
+			botaoFaltas = document.getElementById('calcFaltas');
+		}
+		
+		function lerDados(arquivo) {
+			var leitor = new FileReader();
+			leitor.readAsText(arquivo);
+			leitor.onload = function() {
+				var texto = leitor.result;
+				dadosTxt.value = texto;
+			}
+		}
+		
+		function lerCSV(arquivo) {
+			var leitor = new FileReader();
+			leitor.readAsText(arquivo);
+			leitor.onload = function() {
+				var texto = leitor.result;
+				csv = new CSV(texto);
+				var presentes = '';
+				
+				for (var i = 1; i < csv.linhas; i++) {
+					if (csv.coluna(0)[i] != '') {						
+						presentes += i + '. ' + csv.coluna(0)[i] + 
+							' (' + csv.coluna(2)[i] + ')\n';
+					}
+				}
+				
+				csvTxt.value = presentes;
+			}
+		}
+		
+		function processarFaltas() {
+			var alunos = dadosTxt.value.toUpperCase().split(/[@*\n]/);
+			var alunosSemEspaco = [];
+			
+			for (var i in alunos) {
+				alunosSemEspaco.push(tirarEspacos(alunos[i]));
+			}
+			
+			var presentes = csv.coluna(0);
+			var tempos = csv.coluna(2);
+			var abaixoDe80 = [];
+			var abaixoDe45 = [];
+			var abaixoDe30 = [];
+			var ausentes = 'Ausentes.\n\n';
+			var num = 1;
+			
+			for (var i = 1; i < presentes.length; i++) {
+				presentes[i] = presentes[i].toUpperCase();
+				
+				var index = alunosSemEspaco.indexOf(tirarEspacos(presentes[i]));
+				if (index > -1) {
+					delete alunos[index];
+				}
+				
+				var tempo = _horaParaSegundo(tempos[i]);
+				
+				if (tempo < _horaParaSegundo('2:40:00') / 2) {
+					abaixoDe80.push(presentes[i]);
+				}
+				
+				if (tempo < _horaParaSegundo('1:30:00') / 2) {
+					abaixoDe45.push(presentes[i]);
+				}
+				
+				if (tempo < _horaParaSegundo('1:00:00') / 2) {
+					abaixoDe30.push(presentes[i]);
+				}
+			}
+			
+			for (var i in alunos) {
+				if (alunos[i] != '') {
+					ausentes += num++ + '. ' + alunos[i] + '\n';
+				}
+			}
+			
+			if (document.f.a80.checked) {
+				ausentes += '\nTempo abaixo de 80min.\n\n'
+				num = 1;
+				
+				for (var i in abaixoDe80) {
+					ausentes += num++ + '. ' + abaixoDe80[i] + '\n';
+				}
+			}
+
+			if (document.f.a45.checked) {
+				ausentes += '\nTempo abaixo de 45min.\n\n'
+				num = 1;
+				
+				for (var i in abaixoDe45) {
+					ausentes += num++ + '. ' + abaixoDe45[i] + '\n';
+				}
+			}
+			
+			if (document.f.a30.checked) {
+				ausentes += '\nTempo abaixo de 30min.\n\n'
+				num = 1;
+				
+				for (var i in abaixoDe30) {
+					ausentes += num++ + '. ' + abaixoDe30[i] + '\n';
+				}
+			}
+			
+			faltasTxt.value = ausentes;
+		}
+		
+		function _horaParaSegundo(textoHora) {
+			var partes = textoHora.split(':');
+			
+			var hora = Number(partes[0]) * 3600;
+			var minuto = Number(partes[1]) * 60;
+			var segundo = Number(partes[2]);
+			
+			return hora + minuto + segundo;
+		}
+		
+		function tirarEspacos(texto) {
+			var palavras = texto.split(/[ '\d{1,10}']/); // tira a turma também.
+			var semEspaco = '';
+			
+			for (var i in palavras) {
+				semEspaco += palavras[i];
+			}
+			
+			return semEspaco;
+		}
+		
+	</script>
+</head>
+<body onload='init();'>
+	<h1>Processamento de Faltas</h1>
+	<form name='f'>
+	Tempo de participação: 
+	<input type='checkbox' name='a80'>abaixo de 80min</input>
+	<input type='checkbox' name='a45'>abaixo de 45min</input> 
+	<input type='checkbox' name='a30'>abaixo de 30min</input> 
+	</form>
+	<div id='dados'>
+	<h2>Lista de Alunos</h2>
+	<textarea id='dadosTxt' rows='27' cols='60' placeholder='Insira o nome de cada aluno da turma em linhas diferentes ou carregue um arquivo de texto com esta pré formatação.
+	
+Esta lista é usada de apoio para identificar os alunos faltosos no dia.'></textarea> <br/>
+	<input id='loadData' type='file' onchange='lerDados(this.files[0]);'/>
+	</div>
+	
+	<div id='csv'>
+	<h2>CSV do Relatório de Presença</h2>
+	<textarea id='csvTxt' rows='27' cols='60' disabled placeholder='Carregue o arquivo csv do relatório de aula.
+
+Aqui aparecerão a lista dos alunos presentes e seus respectivos tempos de permanência na aula.'></textarea> <br/>
+	<input id='loadCSV' type='file' onchange='lerCSV(this.files[0]);'/>
+	</div>
+	
+	<div id='faltas'>
+	<h2>Alunos Ausentes</h2>
+	<textarea id='faltasTxt' rows='27' cols='60' disabled placeholder='Ao processar as faltas, a lista extraída do CSV será comparada com a lista de alunos da turma e aqui serão listados os alunos que receberão falta.
+
+Primeiro os alunos ausentes.
+
+Abaixo, na ordem decrescente de tempo mínimo de participação, as listas de alunos que se encaixam nas caixas de tempo selecionadas.'></textarea> <br/>
+	<button id='calcFaltas' onclick='processarFaltas();'>Processar Faltas</button>
+	</div>
+</body>
+</html>

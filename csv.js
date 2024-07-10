@@ -11,7 +11,7 @@ CSV.prototype = {
 		var linhas = this._eliminarNulo(texto.split('\n'));
 		
 		for (var i in linhas) {
-			matriz[i] = this._eliminarNulo(linhas[i].split(/[",]/));
+			matriz[i] = this._eliminarNulo(linhas[i].split(/[",;]/));
 		}
 		
 		return matriz;
